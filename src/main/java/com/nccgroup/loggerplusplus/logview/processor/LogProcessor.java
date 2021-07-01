@@ -106,39 +106,6 @@ public class LogProcessor implements IHttpListener {
         }
     }
 
-//    /**
-//     * Process messages received from the proxy tool.
-//     * For requests, a new processing job is added to the executor.
-//     * @param isRequestOnly
-//     * @param proxyMessage
-//     */
-//    @Override
-//    public void processProxyMessage(final boolean isRequestOnly, final IInterceptedProxyMessage proxyMessage) {
-//        final int toolFlag = IBurpExtenderCallbacks.TOOL_PROXY;
-//        if(proxyMessage == null || !(Boolean) preferences.getSetting(PREF_ENABLED) || !isValidTool(toolFlag)) return;
-//        Date arrivalTime = new Date();
-//
-//        if(isRequestOnly){
-//            //The request is not yet sent, process the request object
-//            final LogEntry logEntry = new LogEntry(toolFlag, arrivalTime, proxyMessage.getMessageInfo());
-//            //Store our proxy specific info now.
-//            logEntry.clientIP = String.valueOf(proxyMessage.getClientIpAddress());
-//            logEntry.listenerInterface = proxyMessage.getListenerInterface();
-//
-//            //Make a note of the entry UUID corresponding to the message identifier.
-//            proxyIdToUUIDMap.put(proxyMessage.getMessageReference(), logEntry.getIdentifier());
-//            submitNewEntryProcessingRunnable(logEntry);
-//        }else{
-//            //We're handling a response.
-//            UUID uuid = proxyIdToUUIDMap.remove(proxyMessage.getMessageReference());
-//            if(uuid != null){
-//                updateRequestWithResponse(uuid, arrivalTime, proxyMessage.getMessageInfo());
-//            }else{
-//                System.out.println("LOST");
-//            }
-//        }
-//    }
-
     /**
      * When a response comes in, determine if the request has already been processed or not.
      * If it has not yet been processed, add the response information to the entry and let the original job handle it.

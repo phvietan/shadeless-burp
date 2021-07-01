@@ -42,10 +42,6 @@ public class LogTableModel extends AbstractTableModel implements ColorFilterList
 
     @Override
     public void setValueAt(Object value, int rowModelIndex, int columnModelIndex) {
-        LogEntry logEntry = entries.get(rowModelIndex);
-        if (this.columnModel.getColumn(columnModelIndex).getIdentifier() == LogEntryField.COMMENT) {
-            logEntry.setComment(String.valueOf(value));
-        }
         fireTableCellUpdated(rowModelIndex, columnModelIndex);
     }
 

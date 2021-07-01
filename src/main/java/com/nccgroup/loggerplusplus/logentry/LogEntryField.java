@@ -11,17 +11,13 @@ public enum LogEntryField {
     NUMBER(FieldGroup.ENTRY, Integer.class, "Item table number. Not valid for filter use.", "Number"),
     PROXY_TOOL(FieldGroup.ENTRY, String.class, "Originating tool name. Extension generated requests will be displayed as \"Extender\".", "Tool"),
     TAGS(FieldGroup.ENTRY, String.class, "The configured tags for which this entry match.", "Tags"),
-    LISTENER_INTERFACE(FieldGroup.ENTRY, String.class, "The interface the proxied message was delivered to.", "ListenInterface", "Interface"),
-    CLIENT_IP(FieldGroup.ENTRY, String.class, "The requesting client IP address.", "ClientIP", "ClientAddress"),
 
     //Request,
-    BASE64_REQUEST(FieldGroup.REQUEST, String.class, "The entire request encoded in Base64", "AsBase64"),
     REQUEST_HEADERS(FieldGroup.REQUEST, String.class, "The request line and associated headers.", "Headers", "Header"),
     REQUEST_BODY(FieldGroup.REQUEST, String.class, "The request body.", "Body"),
     REQUEST_TIME(FieldGroup.REQUEST, Date.class, "Date and time of inital request (as received by L++).", "Time"),
     REQUEST_LENGTH(FieldGroup.REQUEST, Integer.class, "The length of the received request.", "Length"),
     REQUEST_TOOL(FieldGroup.REQUEST, String.class, "The tool used to initiate the request.", "Tool"), //Alias for proxy.tool,
-    COMMENT(FieldGroup.REQUEST, String.class, "Comments set on the entry.", "Comment"),
     COMPLETE(FieldGroup.REQUEST, Boolean.class, "Has a response been received?", "Complete", "isComplete"),
     URL(FieldGroup.REQUEST, String.class, "The entire URL of the request.", "URL", "URI"),
     METHOD(FieldGroup.REQUEST, String.class, "The request method used.", "Method"),
@@ -46,10 +42,8 @@ public enum LogEntryField {
     PARAMETERS(FieldGroup.REQUEST, String.class, "The parameters in the request.", "Parameters", "Params"),
 
     //Response
-    BASE64_RESPONSE(FieldGroup.RESPONSE, String.class, "The entire response encoded in Base64", "AsBase64"),
     RESPONSE_HEADERS(FieldGroup.RESPONSE, String.class, "The status line and associated headers.", "Headers", "Header"),
     RESPONSE_BODY(FieldGroup.RESPONSE, String.class, "The response body.", "Body"),
-    RESPONSE_HASH(FieldGroup.RESPONSE, String.class, "SHA1 Hash of the response", "hash", "sha1"),
     RESPONSE_TIME(FieldGroup.RESPONSE, Date.class, "Date and time of receiving the response (as received by L++).", "Time"),
     RESPONSE_LENGTH(FieldGroup.RESPONSE, Integer.class, "The length of the received response.", "Length"),
     STATUS(FieldGroup.RESPONSE, Short.class, "The status code received in the response.", "Status", "StatusCode"),

@@ -12,24 +12,24 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutionException;
 
-public class ElasticExporterControlPanel extends JPanel {
+public class ShadelessExporterControlPanel extends JPanel {
 
-    private final ElasticExporter elasticExporter;
-    private static final String STARTING_TEXT = "Starting Elastic Exporter...";
-    private static final String STOPPING_TEXT = "Stopping Elastic Exporter...";
-    private static final String START_TEXT = "Start Elastic Exporter";
-    private static final String STOP_TEXT = "Stop Elastic Exporter";
+    private final ShadelessExporter elasticExporter;
+    private static final String STARTING_TEXT = "Starting Shadeless Exporter...";
+    private static final String STOPPING_TEXT = "Stopping Shadeless Exporter...";
+    private static final String START_TEXT = "Start Shadeless Exporter";
+    private static final String STOP_TEXT = "Stop Shadeless Exporter";
 
     Logger logger = LogManager.getLogger(this);
 
-    public ElasticExporterControlPanel(ElasticExporter elasticExporter) {
+    public ShadelessExporterControlPanel(ShadelessExporter elasticExporter) {
         this.elasticExporter = elasticExporter;
         this.setLayout(new BorderLayout());
 
-        JButton showConfigDialogButton = new JButton(new AbstractAction("Configure Elastic Exporter") {
+        JButton showConfigDialogButton = new JButton(new AbstractAction("Configure Shadeless Exporter") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                new ElasticExporterConfigDialog(LoggerPlusPlus.instance.getLoggerFrame(), elasticExporter)
+                new ShadelessExporterConfigDialog(LoggerPlusPlus.instance.getLoggerFrame(), elasticExporter)
                         .setVisible(true);
 
                 //Dialog closed. Update previous project entry filter to current value.
@@ -38,7 +38,7 @@ public class ElasticExporterControlPanel extends JPanel {
             }
         });
 
-        JToggleButton exportButton = new JToggleButton("Start Elastic Exporter");
+        JToggleButton exportButton = new JToggleButton("Start Shadeless Exporter");
         exportButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -69,7 +69,7 @@ public class ElasticExporterControlPanel extends JPanel {
                         try {
                             if(exception != null) {
                                 JOptionPane.showMessageDialog(exportButton, "Could not start elastic exporter: " +
-                                        exception.getMessage() + "\nSee the logs for more information.", "Elastic Exporter", JOptionPane.ERROR_MESSAGE);
+                                        exception.getMessage() + "\nSee the logs for more information.", "Shadeless Exporter", JOptionPane.ERROR_MESSAGE);
                                 logger.error("Could not start elastic exporter.", exception);
                             }
                             Boolean success = get();
@@ -104,7 +104,7 @@ public class ElasticExporterControlPanel extends JPanel {
         }, Alignment.FILL, 1.0, 1.0), BorderLayout.CENTER);
 
 
-        this.setBorder(BorderFactory.createTitledBorder("Elastic Exporter"));
+        this.setBorder(BorderFactory.createTitledBorder("Shadeless Exporter"));
     }
 
     private void enableExporter() throws Exception {

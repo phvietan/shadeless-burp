@@ -2,7 +2,6 @@ package com.nccgroup.loggerplusplus;
 
 import burp.ITab;
 import com.coreyd97.BurpExtenderUtilities.PopOutPanel;
-import com.nccgroup.loggerplusplus.about.AboutPanel;
 import com.nccgroup.loggerplusplus.help.HelpPanel;
 import com.nccgroup.loggerplusplus.util.Globals;
 
@@ -22,7 +21,6 @@ public class MainViewController implements ITab {
         tabbedPane.addTab("Filter Library", null, loggerPlusPlus.getLibraryController().getFilterLibraryPanel(), null);
         tabbedPane.addTab("Grep Values", null, loggerPlusPlus.getGrepperController().getGrepperPanel(), null);
         tabbedPane.addTab("Options", null, loggerPlusPlus.getPreferencesController().getPreferencesPanel(), null);
-        tabbedPane.addTab("About", null, new AboutPanel(loggerPlusPlus.getPreferencesController().getPreferences()), null);
         tabbedPane.addTab("Help", null, new HelpPanel(), null);
         this.popOutWrapper = new PopOutPanel(tabbedPane, Globals.APP_NAME);
     }

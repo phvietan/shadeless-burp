@@ -27,11 +27,7 @@ public class ExportController {
     }
 
     private void initializeExporters() {
-        this.exporters.put(CSVExporter.class, new CSVExporter(this, preferences));
-        this.exporters.put(JSONExporter.class, new JSONExporter(this, preferences));
-        this.exporters.put(HARExporter.class, new HARExporter(this, preferences));
-        this.exporters.put(Base64Exporter.class, new Base64Exporter(this, preferences));
-        this.exporters.put(ElasticExporter.class, new ElasticExporter(this, preferences));
+        this.exporters.put(ShadelessExporter.class, new ShadelessExporter(this, preferences));
     }
 
     public HashMap<Class<? extends LogExporter>, LogExporter> getExporters() {

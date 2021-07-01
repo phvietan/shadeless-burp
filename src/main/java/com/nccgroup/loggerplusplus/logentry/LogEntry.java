@@ -1,31 +1,17 @@
-//
-// Burp Suite Logger++
-// 
-// Released as open source by NCC Group Plc - https://www.nccgroup.trust/
-// 
-// Originally Developed by Soroush Dalili (@irsdl)
-// Maintained by Corey Arthur (@CoreyD97)
-//
-// Project link: http://www.github.com/nccgroup/BurpSuiteLoggerPlusPlus
-//
-// Released under AGPL see LICENSE for more information
-//
-
 package com.nccgroup.loggerplusplus.logentry;
 
 import burp.*;
+import com.google.gson.JsonObject;
 import com.nccgroup.loggerplusplus.LoggerPlusPlus;
 import com.nccgroup.loggerplusplus.filter.colorfilter.ColorFilter;
 import com.nccgroup.loggerplusplus.filter.tag.Tag;
 import com.nccgroup.loggerplusplus.logview.processor.LogProcessor;
 import com.nccgroup.loggerplusplus.reflection.ReflectionController;
 import com.nccgroup.loggerplusplus.util.Globals;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.net.URL;
 import java.text.ParseException;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class LogEntry {
@@ -47,10 +33,8 @@ public class LogEntry {
 	public String responseHttpVersion = "";
 	public boolean hasBodyParam = false;
 	public boolean hasCookieParam = false;
-	public String title = "";
 	public String newCookies = "";
 	public String sentCookies = "";
-	public String listenerInterface = "";
 	public boolean isSSL = false;
 	public String urlExtension = "";
 	public String referrerURL = "";
@@ -59,7 +43,6 @@ public class LogEntry {
 	public String protocol = "";
 	public int targetPort = -1;
 	public int requestLength = -1;
-	public String clientIP = "";
 	public boolean hasSetCookies = false;
 	public String formattedResponseTime = "";
 	public String responseMimeType = "";
@@ -68,9 +51,6 @@ public class LogEntry {
 	public String responseContentType = "";
 	public boolean complete = false;
 	public CookieJarStatus usesCookieJar = CookieJarStatus.NO;
-	public String responseHash;
-	// public String[] regexAllReq = {"","","","",""};
-	// public String[] regexAllResp = {"","","","",""};
 
 	public List<UUID> matchingColorFilters;
 	public List<Tag> matchingTags;
@@ -83,6 +63,9 @@ public class LogEntry {
 	private List<IParameter> tempParameters;
 	private List<String> parameters;
 	private List<String> reflectedParameters;
+
+	public byte[] rawRequestBody;
+	public byte[] rawResponseBody;
 
 	private LogEntry() {
 		this.identifier = UUID.randomUUID();
@@ -108,6 +91,55 @@ public class LogEntry {
 	public LogEntry(int tool, Date formattedRequestTime, IHttpRequestResponse requestResponse) {
 		this(tool, requestResponse);
 		this.setReqestTime(formattedRequestTime);
+	}
+
+	public String getRequestBodyHash(String project) {
+		return Helper.hmac(project.getBytes(), this.rawRequestBody);
+	}
+	public String getResponseBodyHash(String project) {
+		return Helper.hmac(project.getBytes(), this.rawResponseBody);
+	}
+
+	public JsonObject toJsonObject(String project, String codeName) {
+		JsonObject json = new JsonObject();
+		// Request
+		json.addProperty("toolName", this.toolName);
+		json.addProperty("method", this.method);
+		json.addProperty("requestLength", this.requestLength);
+		json.addProperty("requestHttpVersion", this.requestHttpVersion);
+		json.addProperty("requestContentType", this.requestContentType);
+		json.addProperty("referer", this.referrerURL);
+		json.addProperty("protocol", this.protocol);
+		json.addProperty("origin", this.host);
+		json.addProperty("port", this.targetPort);
+		json.addProperty("path", this.url.getPath());
+		json.addProperty("requestCookies", this.sentCookies);
+		json.addProperty("hasBodyParam", this.hasBodyParam);
+		json.addProperty("querystring", this.url.getQuery());
+		json.addProperty("requestBodyHash", this.getRequestBodyHash(project));
+		json.add("parameters", Helper.toJsonArray(this.parameters));
+		json.add("requestHeaders", Helper.toJsonArray(this.requestHeaders));
+
+		// Response
+		json.addProperty("responseStatus", this.responseStatus);
+		json.addProperty("responseContentType", this.responseContentType);
+		json.addProperty("responseStatusText", this.responseStatusText);
+		json.addProperty("responseLength", this.responseLength);
+		json.addProperty("responseMimeType", this.responseMimeType);
+		json.addProperty("responseHttpVersion", this.responseHttpVersion);
+		json.addProperty("responseInferredMimeType", this.responseInferredMimeType);
+		json.addProperty("responseCookies", this.newCookies);
+		json.addProperty("responseBodyHash", this.getResponseBodyHash(project));
+		json.add("responseHeaders", Helper.toJsonArray(this.responseHeaders));
+
+		// Other
+		json.addProperty("project", project);
+		json.addProperty("codeName", codeName);
+		json.addProperty("rtt", this.requestResponseDelay);
+		json.add("reflectedParameters", Helper.toJsonArray(this.reflectedParameters));
+		// Codename, project (added later)
+
+		return json;
 	}
 
 	public void process() {
@@ -172,13 +204,13 @@ public class LogEntry {
 		this.url = tempAnalyzedReq.getUrl();
 		this.hostname = tempRequestResponseHttpService.getHost();
 		this.protocol = tempRequestResponseHttpService.getProtocol();
-		this.isSSL = this.protocol.equals("https");
 		this.targetPort = tempRequestResponseHttpService.getPort();
 
 		boolean isDefaultPort = (this.protocol.equals("https") && this.targetPort == 443)
 				|| (this.protocol.equals("http") && this.targetPort == 80);
 
 		this.host = this.protocol + "://" + this.hostname + (isDefaultPort ? "" : ":" + this.targetPort);
+		this.isSSL = this.protocol.equals("https");
 
 		this.method = tempAnalyzedReq.getMethod();
 		try {
@@ -194,6 +226,10 @@ public class LogEntry {
 		}
 
 		this.requestLength = requestResponse.getRequest().length - tempAnalyzedReq.getBodyOffset();
+		this.rawRequestBody = Arrays.copyOfRange(
+				requestResponse.getRequest(),
+				tempAnalyzedReq.getBodyOffset(), requestResponse.getRequest().length
+		);
 		this.hasBodyParam = requestLength > 0;
 		this.params = this.url.getQuery() != null || this.hasBodyParam;
 		this.hasCookieParam = false;
@@ -243,59 +279,6 @@ public class LogEntry {
 		}
 
 		return Status.AWAITING_RESPONSE;
-
-		// RegEx processing for requests - should be available only when we have a RegEx
-		// rule!
-		// There are 5 RegEx rule for requests
-		// LogTableColumn.ColumnIdentifier[] regexReqColumns = new
-		// LogTableColumn.ColumnIdentifier[]{
-		// REGEX1REQ, REGEX2REQ, REGEX3REQ, REGEX4REQ, REGEX5REQ
-		// };
-		//
-		// for (LogTableColumn.ColumnIdentifier regexReqColumn : regexReqColumns) {
-		// int columnIndex = logTable.getColumnModel().getColumnIndex(regexReqColumn);
-		// if(columnIndex == -1){
-		// continue;
-		// }
-		// LogTableColumn column = (LogTableColumn)
-		// logTable.getColumnModel().getColumn(columnIndex);
-		// String regexString = regexColumn.getRegExData().getRegExString();
-		// if(!regexString.isEmpty()){
-		// // now we can process it safely!
-		// Pattern p = null;
-		// try{
-		// if(regexColumn.getRegExData().isRegExCaseSensitive())
-		// p = Pattern.compile(regexString);
-		// else
-		// p = Pattern.compile(regexString, Pattern.CASE_INSENSITIVE);
-		//
-		// Matcher m = p.matcher(strFullRequest);
-		// StringBuilder allMatches = new StringBuilder();
-		// int counter = 1;
-		// while (m.find()) {
-		// if(counter==2){
-		// allMatches.insert(0, "X");
-		// allMatches.append("X");
-		// }
-		// if(counter > 1){
-		// allMatches.append("X"+m.group()+"X"); //TODO Investigate unicode use
-		// }else{
-		// allMatches.append(m.group());
-		// }
-		// counter++;
-		//
-		// }
-		//
-		// //TODO Fix storage of regex result
-		//// this.regexAllReq[i] = allMatches.toString();
-		//
-		// }catch(Exception e){
-		// LoggerPlusPlus.callbacks.printError("Error in regular expression: " +
-		// regexString);
-		// }
-		//
-		// }
-		// }
 	}
 
 	/**
@@ -351,10 +334,11 @@ public class LogEntry {
 			this.responseContentType = headers.get("content-type").get(0);
 		}
 
-		Matcher titleMatcher = Globals.HTML_TITLE_PATTERN.matcher(strFullResponse);
-		if (titleMatcher.find()) {
-			this.title = titleMatcher.group(1);
-		}
+		this.rawResponseBody = Arrays.copyOfRange(
+				requestResponse.getResponse(),
+				tempAnalyzedResp.getBodyOffset(),
+				requestResponse.getResponse().length
+		);
 
 		String responseBody = new String(requestResponse.getResponse())
 				.substring(requestResponse.getResponse().length - responseLength);
@@ -394,60 +378,6 @@ public class LogEntry {
 		this.complete = true;
 
 		return Status.PROCESSED;
-
-		// RegEx processing for responses - should be available only when we have a
-		// RegEx rule!
-		// There are 5 RegEx rule for requests
-		// for(int i=0;i<5;i++){
-		// String regexVarName = "regex"+(i+1)+"Resp";
-		// if(logTable.getColumnModel().isColumnEnabled(regexVarName)){
-		// // so this rule is enabled!
-		// // check to see if the RegEx is not empty
-		// LogTableColumn regexColumn =
-		// logTable.getColumnModel().getColumnByName(regexVarName);
-		// String regexString = regexColumn.getRegExData().getRegExString();
-		// if(!regexString.isEmpty()){
-		// // now we can process it safely!
-		// Pattern p = null;
-		// try{
-		// if(regexColumn.getRegExData().isRegExCaseSensitive())
-		// p = Pattern.compile(regexString);
-		// else
-		// p = Pattern.compile(regexString, Pattern.CASE_INSENSITIVE);
-		//
-		// Matcher m = p.matcher(strFullResponse);
-		// StringBuilder allMatches = new StringBuilder();
-		//
-		// int counter = 1;
-		// while (m.find()) {
-		// if(counter==2){
-		// allMatches.insert(0, "X");
-		// allMatches.append("X");
-		// }
-		// if(counter > 1){
-		// allMatches.append("X"+m.group()+"X"); //TODO investigate unicode use
-		// }else{
-		// allMatches.append(m.group());
-		// }
-		// counter++;
-		//
-		// }
-		//
-		// this.regexAllResp[i] = allMatches.toString();
-		//
-		// }catch(Exception e){
-		// LoggerPlusPlus.callbacks.printError("Error in regular expression: " +
-		// regexString);
-		// }
-		//
-		// }
-		// }
-		// }
-
-		// if(!logTable.getColumnModel().isColumnEnabled("response") &&
-		// !logTable.getColumnModel().isColumnEnabled("request")){
-		// this.requestResponse = null;
-		// }
 	}
 
 	public IHttpRequestResponse getRequestResponse() {
@@ -466,10 +396,6 @@ public class LogEntry {
 	public void setResponseTime(Date responseTime) {
 		this.responseDateTime = responseTime;
 		this.formattedResponseTime = LogProcessor.LOGGER_DATE_FORMAT.format(this.responseDateTime);
-	}
-
-	public void setComment(String comment) {
-		this.requestResponse.setComment(comment);
 	}
 
 	public Object getValueByKey(LogEntryField columnName) {
@@ -511,8 +437,6 @@ public class LogEntry {
 					return this.requestDateTime;
 				case RESPONSE_TIME:
 					return this.responseDateTime;
-				case COMMENT:
-					return this.requestResponse.getComment();
 				case REQUEST_CONTENT_TYPE:
 					return this.requestContentType;
 				case REQUEST_HTTP_VERSION:
@@ -541,42 +465,16 @@ public class LogEntry {
 					return this.hasSetCookies;
 				case HASPARAMS:
 					return this.params;
-				case TITLE:
-					return this.title;
 				case ISSSL:
 					return this.isSSL;
 				case NEW_COOKIES:
 					return this.newCookies;
-				case LISTENER_INTERFACE:
-					return this.listenerInterface;
-				case CLIENT_IP:
-					return this.clientIP;
 				case COMPLETE:
 					return this.complete;
 				case SENTCOOKIES:
 					return this.sentCookies;
 				case USES_COOKIE_JAR:
 					return this.usesCookieJar.toString();
-				// case REGEX1REQ:
-				// return this.regexAllReq[0];
-				// case REGEX2REQ:
-				// return this.regexAllReq[1];
-				// case REGEX3REQ:
-				// return this.regexAllReq[2];
-				// case REGEX4REQ:
-				// return this.regexAllReq[3];
-				// case REGEX5REQ:
-				// return this.regexAllReq[4];
-				// case REGEX1RESP:
-				// return this.regexAllResp[0];
-				// case REGEX2RESP:
-				// return this.regexAllResp[1];
-				// case REGEX3RESP:
-				// return this.regexAllResp[2];
-				// case REGEX4RESP:
-				// return this.regexAllResp[3];
-				// case REGEX5RESP:
-				// return this.regexAllResp[4];
 				case REFLECTED_PARAMS:
 					return reflectedParameters;
 				case REFLECTION_COUNT:
@@ -593,17 +491,6 @@ public class LogEntry {
 					return requestHeaders != null ? String.join("\r\n", requestHeaders) : "";
 				case RESPONSE_HEADERS:
 					return responseHeaders != null ? String.join("\r\n", responseHeaders) : "";
-				case BASE64_REQUEST:
-					return Base64.getEncoder().encodeToString(requestResponse.getRequest());
-				case BASE64_RESPONSE:
-					return Base64.getEncoder().encodeToString(requestResponse.getResponse());
-				case RESPONSE_HASH: {
-					if (responseHash == null) {
-						responseHash = DigestUtils
-								.sha1Hex(((String) getValueByKey(LogEntryField.RESPONSE_BODY)).getBytes());
-					}
-					return responseHash;
-				}
 				default:
 					return "";
 			}

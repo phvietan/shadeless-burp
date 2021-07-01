@@ -98,7 +98,7 @@ public class EntryImportWorker extends SwingWorker<Void, Integer> {
             return this;
         }
 
-        //Control if the imported entries should also be sent to exporters (e.g. ElasticSearch)
+        //Control if the imported entries should also be sent to exporters (e.g. ShadelessSearch)
         //Prevents existing entries being re-exported
         public Builder setSendToAutoExporters(boolean autoExport) {
             this.sendToAutoExporters = autoExport;

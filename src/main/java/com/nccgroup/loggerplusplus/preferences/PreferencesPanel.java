@@ -178,10 +178,7 @@ public class PreferencesPanel extends JScrollPane {
         ComponentGroup exportGroup = new ComponentGroup(Orientation.HORIZONTAL);
         HashMap<Class<? extends LogExporter>, LogExporter> exporters = preferencesController.getLoggerPlusPlus()
                 .getExportController().getExporters();
-        exportGroup.add(((ExportPanelProvider) exporters.get(CSVExporter.class)).getExportPanel());
-        exportGroup.add(((ExportPanelProvider) exporters.get(JSONExporter.class)).getExportPanel());
-        exportGroup.add(((ExportPanelProvider) exporters.get(HARExporter.class)).getExportPanel());
-        exportGroup.add(((ExportPanelProvider) exporters.get(ElasticExporter.class)).getExportPanel());
+        exportGroup.add(((ExportPanelProvider) exporters.get(ShadelessExporter.class)).getExportPanel());
 
         ComponentGroup otherPanel = new ComponentGroup(Orientation.VERTICAL, "Other");
         JSpinner spnRespTimeout = otherPanel.addPreferenceComponent(preferences, PREF_RESPONSE_TIMEOUT,
