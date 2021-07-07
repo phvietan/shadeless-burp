@@ -87,8 +87,8 @@ public class LoggerPreferenceFactory extends PreferenceFactory {
         prefs.registerSetting(PREF_CODE_NAME, String.class, "anpham");
         prefs.registerSetting(PREF_AUTO_IMPORT_PROXY_HISTORY, Boolean.class, false);
         prefs.registerSetting(PREF_LOG_OTHER_LIVE, Boolean.class, true);
-        prefs.registerSetting(PREF_SHADELESS_PACKETS_URL, String.class, "http://ubuntu:3000/api/burp/packets");
-        prefs.registerSetting(PREF_SHADELESS_FILES_URL, String.class, "http://ubuntu:3000/api/burp/files");
+        prefs.registerSetting(PREF_SHADELESS_PACKETS_URL, String.class, "http://ubuntu:3000/burp/packets");
+        prefs.registerSetting(PREF_SHADELESS_FILES_URL, String.class, "http://ubuntu:3000/burp/files");
         prefs.registerSetting(PREF_SHADELESS_FILES_CHECK_URL, String.class, "http://ubuntu:3000/files");
         prefs.registerSetting(PREF_SHADELESS_PROJECT, String.class, "logger");
         prefs.registerSetting(PREF_SHADELESS_DELAY, Integer.class, 30);

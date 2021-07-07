@@ -153,9 +153,6 @@ public class ShadelessExporter extends AutomaticLogExporter implements ExportPan
             String project = preferences.getSetting(Globals.PREF_SHADELESS_PROJECT);
 
             ArrayList<JsonObject> entriesJson = convertLogEntriesToJsons(entriesInBulk, project);
-            for (var val : entriesInBulk) {
-                this.debug(val.host + " " + val.hostname);
-            }
             HttpPacketPool packetsPool = new HttpPacketPool(packetUrl, entriesJson);
             packetsPool.send();
 

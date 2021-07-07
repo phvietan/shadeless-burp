@@ -277,6 +277,9 @@ public class LogEntry {
 				}
 			}
 		}
+		if (this.requestContentType == "application/octet-stream") {
+			this.parameters = new ArrayList<>();
+		}
 
 		return Status.AWAITING_RESPONSE;
 	}
@@ -348,6 +351,9 @@ public class LogEntry {
 				.filter(iParameter -> !reflectionController.isParameterFiltered(iParameter)
 						&& reflectionController.validReflection(responseBody, iParameter))
 				.map(IParameter::getName).collect(Collectors.toList());
+		if (this.requestContentType == "application/octet-stream") {
+			this.reflectedParameters = new ArrayList<>();
+		}
 		tempParameters = null; // We're done with these. Allow them to be cleaned.
 
 		if (this.responseDateTime == null) {
