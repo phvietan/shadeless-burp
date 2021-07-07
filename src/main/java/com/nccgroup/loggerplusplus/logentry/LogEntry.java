@@ -277,7 +277,7 @@ public class LogEntry {
 				}
 			}
 		}
-		if (this.requestContentType == "application/octet-stream") {
+		if (this.requestContentType == "application/octet-stream" || this.requestContentType == "application/x-protobuf") {
 			this.parameters = new ArrayList<>();
 		}
 
@@ -351,7 +351,7 @@ public class LogEntry {
 				.filter(iParameter -> !reflectionController.isParameterFiltered(iParameter)
 						&& reflectionController.validReflection(responseBody, iParameter))
 				.map(IParameter::getName).collect(Collectors.toList());
-		if (this.requestContentType == "application/octet-stream") {
+		if (this.requestContentType == "application/octet-stream" || this.requestContentType == "application/x-protobuf") {
 			this.reflectedParameters = new ArrayList<>();
 		}
 		tempParameters = null; // We're done with these. Allow them to be cleaned.
