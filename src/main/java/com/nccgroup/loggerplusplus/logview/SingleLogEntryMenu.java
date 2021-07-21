@@ -19,6 +19,8 @@ import com.nccgroup.loggerplusplus.util.userinterface.dialog.ColorFilterDialog;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,6 +62,14 @@ public class SingleLogEntryMenu extends JPopupMenu {
                     logTableController.getLogViewController().getLogFilterController().setFilter(columnName + "==" + columnValueString);
                 }
             });
+            JMenuItem copyToClipboard = new JMenuItem(new AbstractAction("Copy " + columnValueString + " to clipboard") {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    StringSelection data = new StringSelection(columnValueString.replace("\"", ""));
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(data, data);
+                }
+            });
+            this.add(copyToClipboard);
             this.add(useAsFilter);
 
             if (logTable.getCurrentFilter() != null) {

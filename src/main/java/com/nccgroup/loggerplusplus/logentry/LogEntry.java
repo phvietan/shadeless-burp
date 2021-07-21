@@ -20,6 +20,7 @@ public class LogEntry {
 	Status status = Status.UNPROCESSED;
 	public transient IHttpRequestResponse requestResponse;
 
+	public int countID;
 	public UUID identifier;
 	public int tool;
 	public String toolName;
@@ -73,9 +74,10 @@ public class LogEntry {
 		this.matchingTags = Collections.synchronizedList(new ArrayList<Tag>());
 	}
 
-	public LogEntry(int tool, IHttpRequestResponse requestResponse) {
+	public LogEntry(int tool, IHttpRequestResponse requestResponse, int countID) {
 		this();
 		this.tool = tool;
+		this.countID = countID;
 		this.toolName = LoggerPlusPlus.callbacks.getToolName(tool);
 		this.requestResponse = requestResponse;
 		this.requestDateTime = new Date(0); //Zero epoch dates to prevent null. Response date pulled from response headers
@@ -88,8 +90,8 @@ public class LogEntry {
 	 * @param formattedRequestTime
 	 * @param requestResponse
 	 */
-	public LogEntry(int tool, Date formattedRequestTime, IHttpRequestResponse requestResponse) {
-		this(tool, requestResponse);
+	public LogEntry(int tool, Date formattedRequestTime, IHttpRequestResponse requestResponse, int countID) {
+		this(tool, requestResponse, countID);
 		this.setReqestTime(formattedRequestTime);
 	}
 
@@ -102,9 +104,11 @@ public class LogEntry {
 
 	public JsonObject toJsonObject(String project, String codeName) {
 		JsonObject json = new JsonObject();
+
 		// Request
 		json.addProperty("toolName", this.toolName);
 		json.addProperty("method", this.method);
+		json.addProperty("requestPacketId", this.getRequestPacketId());
 		json.addProperty("requestLength", this.requestLength);
 		json.addProperty("requestHttpVersion", this.requestHttpVersion);
 		json.addProperty("requestContentType", this.requestContentType);
@@ -140,6 +144,10 @@ public class LogEntry {
 		// Codename, project (added later)
 
 		return json;
+	}
+
+	private String getRequestPacketId() {
+		return String.join(".", Globals.APP_SIGNATURE, String.valueOf(this.countID));
 	}
 
 	public void process() {
@@ -184,6 +192,25 @@ public class LogEntry {
 		return previousStatus;
 	}
 
+	// Heuristically determine if a string is non printable
+	// If the number of non-ascii character larger than half of length of string, then it is high chance non-printable
+	private boolean isNonPrintableStringHeur(String s) {
+		int cnt = 0;
+		for (int i = 0; i < s.length(); i += 1) {
+			int cur = s.charAt(i);
+			if (cur > 0x7F) cnt += 1;
+		}
+		return cnt * 2 > s.length();
+	}
+
+	private List<String> removeNonPrintableString(List<String> arr) {
+		List<String> result = new ArrayList<String>();
+		for (String e: arr) {
+			if (!isNonPrintableStringHeur(e)) result.add(e);
+		}
+		return result;
+	}
+
 	private Status processRequest() {
 		IRequestInfo tempAnalyzedReq = LoggerPlusPlus.callbacks.getHelpers().analyzeRequest(this.requestResponse);
 		URL uUrl = tempAnalyzedReq.getUrl();
@@ -199,7 +226,7 @@ public class LogEntry {
 
 		this.tempParameters = tempAnalyzedReq.getParameters().stream()
 				.filter(iParameter -> iParameter.getType() != IParameter.PARAM_COOKIE).collect(Collectors.toList());
-		this.parameters = tempParameters.stream().map(IParameter::getName).collect(Collectors.toList());
+		this.parameters = this.removeNonPrintableString(tempParameters.stream().map(IParameter::getName).collect(Collectors.toList()));
 
 		this.url = tempAnalyzedReq.getUrl();
 		this.hostname = tempRequestResponseHttpService.getHost();
@@ -277,10 +304,6 @@ public class LogEntry {
 				}
 			}
 		}
-		if (this.requestContentType == "application/octet-stream" || this.requestContentType == "application/x-protobuf") {
-			this.parameters = new ArrayList<>();
-		}
-
 		return Status.AWAITING_RESPONSE;
 	}
 
@@ -351,11 +374,9 @@ public class LogEntry {
 				.filter(iParameter -> !reflectionController.isParameterFiltered(iParameter)
 						&& reflectionController.validReflection(responseBody, iParameter))
 				.map(IParameter::getName).collect(Collectors.toList());
-		if (this.requestContentType == "application/octet-stream" || this.requestContentType == "application/x-protobuf") {
-			this.reflectedParameters = new ArrayList<>();
-		}
-		tempParameters = null; // We're done with these. Allow them to be cleaned.
+		reflectedParameters = this.removeNonPrintableString(reflectedParameters);
 
+		tempParameters = null; // We're done with these. Allow them to be cleaned.
 		if (this.responseDateTime == null) {
 			// If it didn't have an arrival time set, parse the response for it.
 			if (headers.get("date") != null && headers.get("date").size() > 0) {
@@ -408,6 +429,8 @@ public class LogEntry {
 
 		try {
 			switch (columnName) {
+				case REQUEST_PACKET_ID:
+					return this.getRequestPacketId();
 				case PROXY_TOOL:
 				case REQUEST_TOOL:
 					return toolName;

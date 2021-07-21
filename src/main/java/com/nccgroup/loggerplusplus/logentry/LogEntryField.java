@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 
 public enum LogEntryField {
 
+    // RequestPacketId (shortened as packetId)
+    REQUEST_PACKET_ID(FieldGroup.REQUEST, String.class, "The RequestPacketId (shortened as packetId)", "PacketId", "PacketId"),
+
     //Proxy
     NUMBER(FieldGroup.ENTRY, Integer.class, "Item table number. Not valid for filter use.", "Number"),
     PROXY_TOOL(FieldGroup.ENTRY, String.class, "Originating tool name. Extension generated requests will be displayed as \"Extender\".", "Tool"),

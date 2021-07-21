@@ -1,5 +1,6 @@
 package com.nccgroup.loggerplusplus.util;
 
+import com.nccgroup.loggerplusplus.logentry.Helper;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.regex.Pattern;
@@ -7,6 +8,7 @@ import java.util.regex.Pattern;
 import static com.nccgroup.loggerplusplus.logentry.LogEntryField.*;
 
 public class Globals {
+    public static final String APP_SIGNATURE = Helper.generateSignature();
     public static final String APP_NAME = "Logger++";
     public static final String VERSION = "3.19.1";
     public static final String TWITTER_URL = "https://twitter.com/CoreyD97";
@@ -70,6 +72,7 @@ public class Globals {
     private static int colOrder = 0;
     public static final String DEFAULT_LOG_TABLE_COLUMNS_JSON = new StringBuilder().append("[")
             .append("{'id':" + NUMBER + ",'name':'Number','defaultVisibleName':'#','visibleName':'#','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(NUMBER.getDescription()) + "'},")
+            .append("{'id':" + REQUEST_PACKET_ID + ",'name':'PacketId','defaultVisibleName':'PacketId','visibleName':'PacketId','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(REQUEST_PACKET_ID.getDescription()) + "'},")
             .append("{'id':" + METHOD + ",'name':'Method','defaultVisibleName':'Method','visibleName':'Method','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(METHOD.getDescription()) + "'},")
             .append("{'id':" + PROTOCOL + ",'name':'Protocol','defaultVisibleName':'Protocol','visibleName':'Protocol','preferredWidth':80,'readonly':true,'order':" + colOrder++ + ",'visible':false,'description':'" + StringEscapeUtils.escapeJson(PROTOCOL.getDescription()) + "'},")
             .append("{'id':" + HOSTNAME + ",'name':'Hostname','defaultVisibleName':'Host Name','visibleName':'Host Name','preferredWidth':150,'readonly':true,'order':" + colOrder++ + ",'visible':false,'description':'" + StringEscapeUtils.escapeJson(HOSTNAME.getDescription()) + "'},")

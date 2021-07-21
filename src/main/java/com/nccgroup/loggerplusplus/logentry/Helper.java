@@ -8,8 +8,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.UUID;
 
 public class Helper {
+    public static String generateSignature() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
+
     public static JsonArray toJsonArray(List<String> arr) {
         JsonArray ja = new JsonArray();
         for (String val : arr) {

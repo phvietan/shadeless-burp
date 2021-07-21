@@ -11,6 +11,7 @@ import com.nccgroup.loggerplusplus.filter.tag.Tag;
 import com.nccgroup.loggerplusplus.logentry.LogEntry;
 import com.nccgroup.loggerplusplus.logentry.Status;
 import com.nccgroup.loggerplusplus.logview.logtable.LogTableController;
+import com.nccgroup.loggerplusplus.util.Lock;
 import com.nccgroup.loggerplusplus.util.NamedThreadFactory;
 import com.nccgroup.loggerplusplus.util.PausableThreadPoolExecutor;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +31,7 @@ public class LogProcessor implements IHttpListener {
     public static final SimpleDateFormat LOGGER_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     public static final SimpleDateFormat SERVER_DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 
+    private int index = 1;
     private final LoggerPlusPlus loggerPlusPlus;
     private final LogTableController logTableController;
     private final ExportController exportController;
@@ -41,6 +43,8 @@ public class LogProcessor implements IHttpListener {
     private final PausableThreadPoolExecutor entryImportExecutor;
     private final ScheduledExecutorService cleanupExecutor;
     private final String instanceIdentifier = String.format("%02d", (int) Math.floor((Math.random() * 100)));
+
+    private Lock lock = new Lock();
 
     Logger logger = LogManager.getLogger(this);
 
@@ -84,20 +88,18 @@ public class LogProcessor implements IHttpListener {
         if(httpMessage == null || !(Boolean) preferences.getSetting(PREF_ENABLED) || !isValidTool(toolFlag)) return;
         Date arrivalTime = new Date();
 
-//        if(!(Boolean) preferences.getSetting(PREF_LOG_OTHER_LIVE)){
-//            //Submit normally, we're not tracking requests and responses separately.
-//            if(!isRequestOnly) { //But only add entries complete with a response.
-//                final LogEntry logEntry = new LogEntry(toolFlag, arrivalTime, httpMessage);
-//                submitNewEntryProcessingRunnable(logEntry);
-//            }
-//            return;
-//        }
-
         if(isRequestOnly){
-            final LogEntry logEntry = new LogEntry(toolFlag, arrivalTime, httpMessage);
-            //Tag the request with the UUID in the comment field, as this persists for when we get the response back!
-            LogProcessorHelper.tagRequestResponseWithUUID(instanceIdentifier, logEntry.getIdentifier(), httpMessage);
-            submitNewEntryProcessingRunnable(logEntry);
+            try {
+                this.lock.lock();
+                final LogEntry logEntry = new LogEntry(toolFlag, arrivalTime, httpMessage, this.index);
+                this.index += 1;
+                //Tag the request with the UUID in the comment field, as this persists for when we get the response back!
+                LogProcessorHelper.tagRequestResponseWithUUID(instanceIdentifier, logEntry.getIdentifier(), httpMessage);
+                submitNewEntryProcessingRunnable(logEntry);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.lock.unlock();
         }else{
             UUID uuid = LogProcessorHelper.extractAndRemoveUUIDFromRequestResponseComment(instanceIdentifier, httpMessage);
             if(uuid != null) {

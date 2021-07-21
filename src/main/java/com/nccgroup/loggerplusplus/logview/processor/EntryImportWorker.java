@@ -36,7 +36,7 @@ public class EntryImportWorker extends SwingWorker<Void, Integer> {
         ThreadPoolExecutor entryImportExecutor = logProcessor.getEntryImportExecutor();
         for (int index = 0; index < entries.size(); index++) {
             if(entryImportExecutor.isShutdown() || this.isCancelled()) return null;
-            final LogEntry logEntry = new LogEntry(originatingTool, entries.get(index));
+            final LogEntry logEntry = new LogEntry(originatingTool, entries.get(index), index);
             int finalIndex = index;
             entryImportExecutor.submit(() -> {
                 if(this.isCancelled()) return;
