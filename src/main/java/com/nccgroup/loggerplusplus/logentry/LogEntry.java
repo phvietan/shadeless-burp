@@ -192,25 +192,6 @@ public class LogEntry {
 		return previousStatus;
 	}
 
-	// Heuristically determine if a string is non printable
-	// If the number of non-ascii character larger than half of length of string, then it is high chance non-printable
-	private boolean isNonPrintableStringHeur(String s) {
-		int cnt = 0;
-		for (int i = 0; i < s.length(); i += 1) {
-			int cur = s.charAt(i);
-			if (cur > 0x7F) cnt += 1;
-		}
-		return cnt * 2 > s.length();
-	}
-
-	private List<String> removeNonPrintableString(List<String> arr) {
-		List<String> result = new ArrayList<String>();
-		for (String e: arr) {
-			if (!isNonPrintableStringHeur(e)) result.add(e);
-		}
-		return result;
-	}
-
 	private Status processRequest() {
 		IRequestInfo tempAnalyzedReq = LoggerPlusPlus.callbacks.getHelpers().analyzeRequest(this.requestResponse);
 		URL uUrl = tempAnalyzedReq.getUrl();
@@ -226,7 +207,11 @@ public class LogEntry {
 
 		this.tempParameters = tempAnalyzedReq.getParameters().stream()
 				.filter(iParameter -> iParameter.getType() != IParameter.PARAM_COOKIE).collect(Collectors.toList());
-		this.parameters = this.removeNonPrintableString(tempParameters.stream().map(IParameter::getName).collect(Collectors.toList()));
+		this.parameters = Helper.uniqueArray(
+				Helper.removeNonPrintableString(
+					tempParameters.stream().map(IParameter::getName).collect(Collectors.toList())
+				)
+		);
 
 		this.url = tempAnalyzedReq.getUrl();
 		this.hostname = tempRequestResponseHttpService.getHost();
@@ -374,7 +359,9 @@ public class LogEntry {
 				.filter(iParameter -> !reflectionController.isParameterFiltered(iParameter)
 						&& reflectionController.validReflection(responseBody, iParameter))
 				.map(IParameter::getName).collect(Collectors.toList());
-		reflectedParameters = this.removeNonPrintableString(reflectedParameters);
+		reflectedParameters = Helper.uniqueArray(
+				Helper.removeNonPrintableString(reflectedParameters)
+		);
 
 		tempParameters = null; // We're done with these. Allow them to be cleaned.
 		if (this.responseDateTime == null) {

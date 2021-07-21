@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ShadelessExporterControlPanel extends JPanel {
 
-    private final ShadelessExporter elasticExporter;
+    private final ShadelessExporter shadelessExporter;
     private static final String STARTING_TEXT = "Starting Shadeless Exporter...";
     private static final String STOPPING_TEXT = "Stopping Shadeless Exporter...";
     private static final String START_TEXT = "Start Shadeless Exporter";
@@ -22,19 +22,15 @@ public class ShadelessExporterControlPanel extends JPanel {
 
     Logger logger = LogManager.getLogger(this);
 
-    public ShadelessExporterControlPanel(ShadelessExporter elasticExporter) {
-        this.elasticExporter = elasticExporter;
+    public ShadelessExporterControlPanel(ShadelessExporter shadelessExporter) {
+        this.shadelessExporter = shadelessExporter;
         this.setLayout(new BorderLayout());
 
         JButton showConfigDialogButton = new JButton(new AbstractAction("Configure Shadeless Exporter") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                new ShadelessExporterConfigDialog(LoggerPlusPlus.instance.getLoggerFrame(), elasticExporter)
+                new ShadelessExporterConfigDialog(LoggerPlusPlus.instance.getLoggerFrame(), shadelessExporter)
                         .setVisible(true);
-
-                //Dialog closed. Update previous project entry filter to current value.
-                String newFilter = elasticExporter.getPreferences().getSetting(Globals.PREF_ELASTIC_FILTER);
-                elasticExporter.getPreferences().setSetting(Globals.PREF_ELASTIC_FILTER_PROJECT_PREVIOUS, newFilter);
             }
         });
 
@@ -108,15 +104,15 @@ public class ShadelessExporterControlPanel extends JPanel {
     }
 
     private void enableExporter() throws Exception {
-        this.elasticExporter.getExportController().enableExporter(this.elasticExporter);
+        this.shadelessExporter.getExportController().enableExporter(this.shadelessExporter);
     }
 
     private void disableExporter() throws Exception {
-        this.elasticExporter.getExportController().disableExporter(this.elasticExporter);
+        this.shadelessExporter.getExportController().disableExporter(this.shadelessExporter);
     }
 
     private boolean isExporterEnabled() {
-        return this.elasticExporter.getExportController().getEnabledExporters().contains(this.elasticExporter);
+        return this.shadelessExporter.getExportController().getEnabledExporters().contains(this.shadelessExporter);
     }
 
 }

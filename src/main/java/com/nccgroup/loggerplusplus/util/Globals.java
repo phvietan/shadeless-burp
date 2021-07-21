@@ -50,17 +50,11 @@ public class Globals {
     public static final String PREF_SHADELESS_FILES_CHECK_URL = "shadelessFilesCheckURL";
     public static final String PREF_SHADELESS_PROJECT = "shadelessProject";
     public static final String PREF_SHADELESS_DELAY = "esDelay";
-    public static final String PREF_ELASTIC_FILTER = "esFilter";
-    public static final String PREF_ELASTIC_FILTER_PROJECT_PREVIOUS = "esFilterProjectPrevious";
-    public static final String PREF_ELASTIC_AUTOSTART_GLOBAL = "elasticAutostartGlobal";
-    public static final String PREF_ELASTIC_AUTOSTART_PROJECT = "elasticAutostartProject";
     public static final String PREF_LOG_OTHER_LIVE = "otherToolLiveLogging";
     public static final String PREF_FILTER_HISTORY = "filterHistory";
     public static final String PREF_AUTO_SAVE = "autoSave";
     public static final String PREF_AUTO_SCROLL = "autoScroll";
     public static final String PREF_GREP_HISTORY = "grepHistory";
-    public static final String PREF_PREVIOUS_EXPORT_FIELDS = "previousExportFields";
-    public static final String PREF_PREVIOUS_ELASTIC_FIELDS = "previousShadelessFields";
     public static final String PREF_SAVED_FIELD_SELECTIONS = "savedFieldSelections";
     public static final String PREF_COLUMNS_VERSION = "columnsVersion";
 

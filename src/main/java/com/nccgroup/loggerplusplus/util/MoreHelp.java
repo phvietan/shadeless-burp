@@ -251,13 +251,4 @@ public class MoreHelp {
 		return val == JOptionPane.YES_OPTION;
 	}
 
-	public static List<LogEntryField> showFieldChooserDialog(JComponent owner, Preferences preferences, String title,
-			List<LogEntryField> defaultFields) {
-		FieldSelectorDialog fieldSelectorDialog = new FieldSelectorDialog(JOptionPane.getFrameForComponent(owner),
-				preferences, title, defaultFields);
-		fieldSelectorDialog.setVisible(true);
-		fieldSelectorDialog.dispose();
-
-		return fieldSelectorDialog.getSelectedFields();
-	}
 }

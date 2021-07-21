@@ -64,15 +64,15 @@ public class LoggerPreferenceFactory extends PreferenceFactory {
         prefs.registerSetting(PREF_UPDATE_ON_STARTUP, Boolean.class, true);
         prefs.registerSetting(PREF_ENABLED, Boolean.class, true);
         prefs.registerSetting(PREF_RESTRICT_TO_SCOPE, Boolean.class, false);
-        prefs.registerSetting(PREF_LOG_GLOBAL, Boolean.class, true);
+        prefs.registerSetting(PREF_LOG_GLOBAL, Boolean.class, false);
         prefs.registerSetting(PREF_LOG_PROXY, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_SPIDER, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_INTRUDER, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_SCANNER, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_REPEATER, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_SEQUENCER, Boolean.class, true);
+        prefs.registerSetting(PREF_LOG_SPIDER, Boolean.class, false);
+        prefs.registerSetting(PREF_LOG_INTRUDER, Boolean.class, false);
+        prefs.registerSetting(PREF_LOG_SCANNER, Boolean.class, false);
+        prefs.registerSetting(PREF_LOG_REPEATER, Boolean.class, false);
+        prefs.registerSetting(PREF_LOG_SEQUENCER, Boolean.class, false);
         prefs.registerSetting(PREF_LOG_EXTENDER, Boolean.class, true);
-        prefs.registerSetting(PREF_LOG_TARGET_TAB, Boolean.class, true);
+        prefs.registerSetting(PREF_LOG_TARGET_TAB, Boolean.class, false);
         prefs.registerSetting(PREF_COLOR_FILTERS, new TypeToken<Map<UUID, ColorFilter>>() {
         }.getType(), defaultColorFilters);
         prefs.registerSetting(PREF_TAG_FILTERS, new TypeToken<Map<UUID, Tag>>() {
@@ -92,14 +92,6 @@ public class LoggerPreferenceFactory extends PreferenceFactory {
         prefs.registerSetting(PREF_SHADELESS_FILES_CHECK_URL, String.class, "http://ubuntu:3000/files");
         prefs.registerSetting(PREF_SHADELESS_PROJECT, String.class, "logger");
         prefs.registerSetting(PREF_SHADELESS_DELAY, Integer.class, 30);
-        prefs.registerSetting(PREF_ELASTIC_FILTER, String.class, "", Preferences.Visibility.GLOBAL);
-        prefs.registerSetting(PREF_ELASTIC_FILTER_PROJECT_PREVIOUS, String.class, null, Preferences.Visibility.PROJECT);
-        prefs.registerSetting(PREF_ELASTIC_AUTOSTART_GLOBAL, Boolean.class, false);
-        prefs.registerSetting(PREF_ELASTIC_AUTOSTART_PROJECT, Boolean.class, false, Preferences.Visibility.PROJECT);
-        prefs.registerSetting(PREF_PREVIOUS_EXPORT_FIELDS, new TypeToken<List<LogEntryField>>() {
-        }.getType(), new ArrayList<LogEntry>());
-        prefs.registerSetting(PREF_PREVIOUS_ELASTIC_FIELDS, new TypeToken<List<LogEntryField>>() {
-        }.getType(), new ArrayList<LogEntry>());
         prefs.registerSetting(PREF_COLUMNS_VERSION, Integer.class, null, Preferences.Visibility.GLOBAL);
         prefs.registerSetting(PREF_SAVED_FIELD_SELECTIONS, new TypeToken<LinkedHashMap<String, LinkedHashMap<LogEntryField, Boolean>>>() {
         }.getType(), new LinkedHashMap<>(), Preferences.Visibility.GLOBAL);
