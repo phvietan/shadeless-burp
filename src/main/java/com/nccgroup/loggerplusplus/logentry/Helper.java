@@ -23,7 +23,7 @@ public class Helper {
             int cur = s.charAt(i);
             if (cur > 0x7F) cnt += 1;
         }
-        return cnt * 2 > s.length();
+        return cnt * 2 >= s.length();
     }
 
     public static List<String> removeNonPrintableString(List<String> arr) {
