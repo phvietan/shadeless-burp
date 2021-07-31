@@ -89,7 +89,7 @@ public class LoggerPlusPlus implements IBurpExtender, IExtensionStateListener {
         mainViewController = new MainViewController(this);
 
 
-        callbacks.setExtensionName("Logger++");
+        callbacks.setExtensionName("Shadeless Burp");
 
         LoggerPlusPlus.callbacks.registerContextMenuFactory(contextMenuFactory);
         LoggerPlusPlus.callbacks.registerExtensionStateListener(LoggerPlusPlus.this);

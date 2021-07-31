@@ -30,7 +30,7 @@ public class LoggerContextMenuFactory implements IContextMenuFactory {
     @Override
     public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
         if(invocation == null) return null;
-        JMenuItem filterMenu = new JMenu("Logger++");
+        JMenuItem filterMenu = new JMenu("Shadeless Burp");
 
         if (invocation.getSelectedMessages().length == 0 ||
                 invocation.getSelectionBounds()[0] == invocation.getSelectionBounds()[1]) {
