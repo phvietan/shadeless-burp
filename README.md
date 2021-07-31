@@ -32,3 +32,7 @@ How to use
   + You might want to change Codename to your name if there are multiple user using Shadeless.
 - 4: Press on Ping Shadeless API, if everything is correct, you should see message `Reached Shadeless API successfully`.
 - 5: Start Shadeless Exporter, now every packets that go though your Burp will be forwarded to Shadeless API server.
+
+Contacts
+----
+If you find any bug, feel free to create an issue.
