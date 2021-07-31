@@ -10,6 +10,10 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 public class ShadelessExporterControlPanel extends JPanel {
@@ -31,6 +35,40 @@ public class ShadelessExporterControlPanel extends JPanel {
             public void actionPerformed(ActionEvent actionEvent) {
                 new ShadelessExporterConfigDialog(LoggerPlusPlus.instance.getLoggerFrame(), shadelessExporter)
                         .setVisible(true);
+            }
+        });
+
+        JButton pingApiButton = new JButton(new AbstractAction("Ping Shadeless Api") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                URL urlPacketObj;
+                URL urlHealthCheckObj;
+                try {
+                    urlPacketObj = new URL(shadelessExporter.preferences.getSetting(Globals.PREF_SHADELESS_PACKETS_URL));
+                    var url = urlPacketObj.getProtocol() + "://" + urlPacketObj.getHost() + ":" + urlPacketObj.getPort()  + "/healthcheck";
+                    urlHealthCheckObj = new URL(url);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Shadeless API URL is wrong format: " + e.getMessage() ,"Shadeless Exporter", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                HttpURLConnection con = null;
+                try {
+                    con = (HttpURLConnection) urlHealthCheckObj.openConnection();
+                    con.setRequestMethod("GET");
+                    con.setConnectTimeout(1000);
+                    int responseCode = 0;
+                    responseCode = con.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        JOptionPane.showMessageDialog(null, "Reached Shadeless API successfully" ,"Shadeless Exporter", JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Something is wrong???" ,"Shadeless Exporter", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Shadeless API is unreachable: " + e.getMessage() ,"Shadeless Exporter", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -64,7 +102,7 @@ public class ShadelessExporterControlPanel extends JPanel {
                     protected void done() {
                         try {
                             if(exception != null) {
-                                JOptionPane.showMessageDialog(exportButton, "Could not start elastic exporter: " +
+                                JOptionPane.showMessageDialog(exportButton, "Could not start shadeless exporter: " +
                                         exception.getMessage() + "\nSee the logs for more information.", "Shadeless Exporter", JOptionPane.ERROR_MESSAGE);
                                 logger.error("Could not start elastic exporter.", exception);
                             }
@@ -93,6 +131,7 @@ public class ShadelessExporterControlPanel extends JPanel {
 
         this.add(PanelBuilder.build(new JComponent[][]{
                 new JComponent[]{showConfigDialogButton},
+                new JComponent[]{pingApiButton},
                 new JComponent[]{exportButton}
         }, new int[][]{
                 new int[]{1},

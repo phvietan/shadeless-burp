@@ -283,13 +283,9 @@ public class PreferencesPanel extends JScrollPane {
         }));
 
         ComponentGroup notesPanel = new ComponentGroup(Orientation.VERTICAL, "Notes");
-        notesPanel.add(new JLabel("Note 0: Right click on columns' headers to change settings."));
-        notesPanel.add(new JLabel("Note 1: Extensive logging  may affect Burp Suite performance."));
-        notesPanel.add(new JLabel(
-                "Note 2: Automatic logging does not saveFilters requests and responses. Only table contents. "));
-        notesPanel.add(
-                new JLabel("Note 3: Full request/response logging available in 'Project Options > Misc > Logging'"));
-        notesPanel.add(new JLabel("Note 4: Updating the extension will reset the log table settings."));
+        notesPanel.add(new JLabel("Step 1: config shadeless exporter"));
+        notesPanel.add(new JLabel("Step 2: ping Shadeless api to check if Burp can reach api server"));
+        notesPanel.add(new JLabel("Step 3: start Shadeless Exporter"));
 
         JComponent mainComponent = PanelBuilder
                 .build(new JPanel[][] { new JPanel[] { statusPanel, statusPanel, statusPanel, statusPanel },

@@ -1,6 +1,7 @@
 package com.nccgroup.loggerplusplus.logentry;
 
 import burp.*;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nccgroup.loggerplusplus.LoggerPlusPlus;
 import com.nccgroup.loggerplusplus.filter.colorfilter.ColorFilter;
@@ -64,6 +65,7 @@ public class LogEntry {
 	private List<IParameter> tempParameters;
 	private List<String> parameters;
 	private List<String> reflectedParameters;
+	private JsonElement reflectedParametersJson;
 
 	public byte[] rawRequestBody;
 	public byte[] rawResponseBody;
@@ -140,8 +142,7 @@ public class LogEntry {
 		json.addProperty("project", project);
 		json.addProperty("codeName", codeName);
 		json.addProperty("rtt", this.requestResponseDelay);
-		json.add("reflectedParameters", Helper.toJsonArray(this.reflectedParameters));
-		// Codename, project (added later)
+		json.add("reflectedParameters", this.reflectedParametersJson);
 
 		return json;
 	}
@@ -362,6 +363,13 @@ public class LogEntry {
 		reflectedParameters = Helper.uniqueArray(
 				Helper.removeNonPrintableString(reflectedParameters)
 		);
+
+		// This will be pushed to api server, reflectedParameters in only used in Burp extension
+		var reflectedParametersList = tempParameters.parallelStream()
+				.filter(iParameter -> !reflectionController.isParameterFiltered(iParameter)
+						&& reflectionController.validReflection(responseBody, iParameter))
+				.collect(Collectors.toList());
+		reflectedParametersJson = Helper.parseListToJson(reflectedParametersList);
 
 		tempParameters = null; // We're done with these. Allow them to be cleaned.
 		if (this.responseDateTime == null) {

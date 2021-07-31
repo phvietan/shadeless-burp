@@ -1,6 +1,9 @@
 package com.nccgroup.loggerplusplus.logentry;
 
+import burp.IParameter;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.Mac;
@@ -10,9 +13,32 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Helper {
+    static int SIGNATURE_SIZE = 16; // 16 bytes
+    private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+
+    public static JsonElement parseListToJson(List<IParameter> arr) {
+        JsonObject json = new JsonObject();
+        Map<String, String> result = new HashMap<String, String>();
+        for (IParameter val : arr) {
+            json.addProperty(val.getName(), val.getValue());
+        }
+        return json;
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
     public static String generateSignature() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
+        byte[] b = new byte[Helper.SIGNATURE_SIZE];
+        new Random().nextBytes(b);
+        return bytesToHex(b);
     }
 
     // Heuristically determine if a string is non printable
