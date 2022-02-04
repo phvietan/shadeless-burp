@@ -9,6 +9,7 @@ public enum LogEntryField {
 
     // RequestPacketId (shortened as packetId)
     REQUEST_PACKET_ID(FieldGroup.REQUEST, String.class, "The RequestPacketId (shortened as packetId)", "PacketId", "PacketId"),
+    STATIC_SCORE(FieldGroup.REQUEST, Double.class, "The static score of the request / response", "StaticScore", "StaticScore"),
 
     //Proxy
     NUMBER(FieldGroup.ENTRY, Integer.class, "Item table number. Not valid for filter use.", "Number"),
