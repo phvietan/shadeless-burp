@@ -139,6 +139,7 @@ public class LogEntry {
 		json.add("responseHeaders", Helper.toJsonArray(this.responseHeaders));
 
 		// Other
+		json.addProperty("staticScore", this.getStaticScore());
 		json.addProperty("project", project);
 		json.addProperty("codeName", codeName);
 		json.addProperty("rtt", this.requestResponseDelay);
