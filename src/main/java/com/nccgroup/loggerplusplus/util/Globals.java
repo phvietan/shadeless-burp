@@ -45,9 +45,7 @@ public class Globals {
     public static final String PREF_SEARCH_THREADS = "searchthreads";
     public static final String PREF_CODE_NAME = "codeName";
     public static final String PREF_AUTO_IMPORT_PROXY_HISTORY = "autoimportproxyhistory";
-    public static final String PREF_SHADELESS_PACKETS_URL = "shadelessPacketsURL";
-    public static final String PREF_SHADELESS_FILES_URL = "shadelessFilesURL";
-    public static final String PREF_SHADELESS_FILES_CHECK_URL = "shadelessFilesCheckURL";
+    public static final String PREF_SHADELESS_URL = "shadelessURL";
     public static final String PREF_SHADELESS_PROJECT = "shadelessProject";
     public static final String PREF_SHADELESS_DELAY = "esDelay";
     public static final String PREF_LOG_OTHER_LIVE = "otherToolLiveLogging";
