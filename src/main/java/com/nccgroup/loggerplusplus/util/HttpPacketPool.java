@@ -11,7 +11,8 @@ public class HttpPacketPool extends HttpRequestPool {
     private HttpPost buildHttpPostRequest(JsonObject obj) throws UnsupportedEncodingException {
         HttpPost request = new HttpPost(this.url);
         StringEntity params = new StringEntity(obj.toString());
-        request.addHeader("Content-Type", "application/json");
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept", "application/json");
         request.setEntity(params);
         return request;
     }

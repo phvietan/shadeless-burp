@@ -15,11 +15,11 @@ public class HttpFilePool {
     private String fileCheckUrl;
     private ArrayList <LogEntry> entries;
 
-    public HttpFilePool(String fileUrl, String fileCheckUrl, String project, ArrayList <LogEntry> entries) {
-        this.fileUrl = fileUrl;
-        this.fileCheckUrl = fileCheckUrl;
+    public HttpFilePool(String apiURl, String project, ArrayList <LogEntry> entries) {
         this.project = project;
         this.entries = entries;
+        this.fileUrl = String.format("%s/burp/files", apiURl);
+        this.fileCheckUrl = String.format("%s/files", apiURl);
     }
 
     private static HttpRequest.BodyPublisher createBodyNone() {
@@ -28,7 +28,7 @@ public class HttpFilePool {
 
     private URI getFileCheckUrl(String hash) {
         return URI.create(
-                String.format("%s/%s/%s",this.fileCheckUrl,this.project,hash)
+                String.format("%s/%s/%s", this.fileCheckUrl, this.project, hash)
         );
     }
 

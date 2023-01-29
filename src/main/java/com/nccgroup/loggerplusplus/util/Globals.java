@@ -45,9 +45,7 @@ public class Globals {
     public static final String PREF_SEARCH_THREADS = "searchthreads";
     public static final String PREF_CODE_NAME = "codeName";
     public static final String PREF_AUTO_IMPORT_PROXY_HISTORY = "autoimportproxyhistory";
-    public static final String PREF_SHADELESS_PACKETS_URL = "shadelessPacketsURL";
-    public static final String PREF_SHADELESS_FILES_URL = "shadelessFilesURL";
-    public static final String PREF_SHADELESS_FILES_CHECK_URL = "shadelessFilesCheckURL";
+    public static final String PREF_SHADELESS_URL = "shadelessURL";
     public static final String PREF_SHADELESS_PROJECT = "shadelessProject";
     public static final String PREF_SHADELESS_DELAY = "esDelay";
     public static final String PREF_LOG_OTHER_LIVE = "otherToolLiveLogging";
@@ -67,6 +65,7 @@ public class Globals {
     public static final String DEFAULT_LOG_TABLE_COLUMNS_JSON = new StringBuilder().append("[")
             .append("{'id':" + NUMBER + ",'name':'Number','defaultVisibleName':'#','visibleName':'#','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(NUMBER.getDescription()) + "'},")
             .append("{'id':" + REQUEST_PACKET_ID + ",'name':'PacketId','defaultVisibleName':'PacketId','visibleName':'PacketId','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(REQUEST_PACKET_ID.getDescription()) + "'},")
+            .append("{'id':" + STATIC_SCORE + ",'name':'StaticScore','defaultVisibleName':'StaticScore','visibleName':'StaticScore','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(STATIC_SCORE.getDescription()) + "'},")
             .append("{'id':" + METHOD + ",'name':'Method','defaultVisibleName':'Method','visibleName':'Method','preferredWidth':65,'readonly':true,'order':" + colOrder++ + ",'visible':true,'description':'" + StringEscapeUtils.escapeJson(METHOD.getDescription()) + "'},")
             .append("{'id':" + PROTOCOL + ",'name':'Protocol','defaultVisibleName':'Protocol','visibleName':'Protocol','preferredWidth':80,'readonly':true,'order':" + colOrder++ + ",'visible':false,'description':'" + StringEscapeUtils.escapeJson(PROTOCOL.getDescription()) + "'},")
             .append("{'id':" + HOSTNAME + ",'name':'Hostname','defaultVisibleName':'Host Name','visibleName':'Host Name','preferredWidth':150,'readonly':true,'order':" + colOrder++ + ",'visible':false,'description':'" + StringEscapeUtils.escapeJson(HOSTNAME.getDescription()) + "'},")

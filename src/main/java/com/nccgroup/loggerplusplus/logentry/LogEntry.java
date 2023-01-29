@@ -139,6 +139,7 @@ public class LogEntry {
 		json.add("responseHeaders", Helper.toJsonArray(this.responseHeaders));
 
 		// Other
+		json.addProperty("staticScore", this.getStaticScore());
 		json.addProperty("project", project);
 		json.addProperty("codeName", codeName);
 		json.addProperty("rtt", this.requestResponseDelay);
@@ -149,6 +150,47 @@ public class LogEntry {
 
 	private String getRequestPacketId() {
 		return String.join(".", Globals.APP_SIGNATURE, String.valueOf(this.countID));
+	}
+
+	private double getStaticScore() {
+		var path = this.url.getPath();
+		if (path.equals("/robots.txt") && this.responseContentType.contains("text/plain")) return 100;
+		var score = 0.0;
+		if (!this.method.equals("GET") && !this.method.equals("HEAD")) {
+			score -= 50;
+		}
+		var ext = Helper.getExtensionOfFile(path);
+
+		var extensionStaticFile = new String[]{"jpeg", "jpg", "png", "js", "css", "txt", "json", "gif", "xml", "woff2", "woff", "ttf", "docx", "m3u8", "ts", "webp", "ico", "svg"};
+		if (Arrays.asList(extensionStaticFile).contains(ext)) {
+			score += 40;
+		}
+		if (ext.equals("gif")) {
+			score += 30;
+		}
+		if (this.parameters.size() == 0) {
+			score += 30;
+		}
+
+		// CDN origin
+		var numCdnOrigin = Helper.getNumberOfContains(this.host, new String[]{"asset", "img", "content", "font", "stc", "cdn", "static", "image", "file", "script", "video"});
+		score += 10.0 * numCdnOrigin;
+
+		if (this.host.length() >= 55) score += 20;
+
+		var numCdnPath = Helper.getNumberOfContains(path, new String[]{"static", "cdn", "chunk-", "icon", "asset", "image", "img", "file", "script", "js", "css", "public", "font", "video", "media", "bootstrap", "jquery"});
+		score += 10.0 * numCdnPath;
+
+		var numPathApi = Helper.getNumberOfContains(path, new String[]{"api", "histo", "renew", "token", "count", "get", "noti", "v1", "v2", "v3", "v4", "v5", "acc", "auth", "profile", "login", "logout", "register", "sign", "session", "search", "upload"});
+		score -= 6.0 * numPathApi;
+
+		if (ext.equals("") && this.responseContentType.contains("json")) {
+			score -= 20;
+		}
+		score = Math.max(score, 0);
+		score = Math.min(score, 100);
+		return score;
+
 	}
 
 	public void process() {
@@ -415,17 +457,14 @@ public class LogEntry {
 		this.formattedRequestTime = LogProcessor.LOGGER_DATE_FORMAT.format(this.requestDateTime);
 	}
 
-	public void setResponseTime(Date responseTime) {
-		this.responseDateTime = responseTime;
-		this.formattedResponseTime = LogProcessor.LOGGER_DATE_FORMAT.format(this.responseDateTime);
-	}
-
 	public Object getValueByKey(LogEntryField columnName) {
 
 		try {
 			switch (columnName) {
 				case REQUEST_PACKET_ID:
 					return this.getRequestPacketId();
+				case STATIC_SCORE:
+					return this.getStaticScore();
 				case PROXY_TOOL:
 				case REQUEST_TOOL:
 					return toolName;

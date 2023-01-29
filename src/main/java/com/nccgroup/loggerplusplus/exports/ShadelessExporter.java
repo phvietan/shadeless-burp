@@ -103,16 +103,14 @@ public class ShadelessExporter extends AutomaticLogExporter implements ExportPan
                 entriesInBulk = new ArrayList<>(pendingEntries);
                 pendingEntries.clear();
             }
-            String packetUrl = preferences.getSetting(Globals.PREF_SHADELESS_PACKETS_URL);
-            String fileUrl = preferences.getSetting(Globals.PREF_SHADELESS_FILES_URL);
-            String fileCheckUrl = preferences.getSetting(Globals.PREF_SHADELESS_FILES_CHECK_URL);
+            String packetUrl = preferences.getSetting(Globals.PREF_SHADELESS_URL);
             String project = preferences.getSetting(Globals.PREF_SHADELESS_PROJECT);
 
             ArrayList<JsonObject> entriesJson = convertLogEntriesToJsons(entriesInBulk, project);
-            HttpPacketPool packetsPool = new HttpPacketPool(packetUrl, entriesJson);
+            HttpPacketPool packetsPool = new HttpPacketPool(packetUrl + "/api/burp/packets", entriesJson);
             packetsPool.send();
 
-            HttpFilePool filesPool = new HttpFilePool(fileUrl, fileCheckUrl, project, entriesInBulk);
+            HttpFilePool filesPool = new HttpFilePool(packetUrl + "/api", project, entriesInBulk);
             filesPool.sendAllEntries();
 
         }catch (Exception e){

@@ -41,12 +41,9 @@ public class ShadelessExporterControlPanel extends JPanel {
         JButton pingApiButton = new JButton(new AbstractAction("Ping Shadeless Api") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                URL urlPacketObj;
                 URL urlHealthCheckObj;
                 try {
-                    urlPacketObj = new URL(shadelessExporter.preferences.getSetting(Globals.PREF_SHADELESS_PACKETS_URL));
-                    var url = urlPacketObj.getProtocol() + "://" + urlPacketObj.getHost() + ":" + urlPacketObj.getPort()  + "/healthcheck";
-                    urlHealthCheckObj = new URL(url);
+                    urlHealthCheckObj = new URL(shadelessExporter.preferences.getSetting(Globals.PREF_SHADELESS_URL) + "/api/healthcheck");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Shadeless API URL is wrong format: " + e.getMessage() ,"Shadeless Exporter", JOptionPane.ERROR_MESSAGE);

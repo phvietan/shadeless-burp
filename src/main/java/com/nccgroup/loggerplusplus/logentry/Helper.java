@@ -25,6 +25,20 @@ public class Helper {
         return json;
     }
 
+    public static String getExtensionOfFile(String filename) {
+        if (filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf(".") + 1);
+        } else return "";
+    }
+
+    public static int getNumberOfContains(String a, String[] b) {
+        int res = 0;
+        for (int i = 0; i < b.length; ++i) {
+            if (a.contains(b[i])) res += 1;
+        }
+        return res;
+    }
+
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {

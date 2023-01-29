@@ -4,22 +4,11 @@ import com.coreyd97.BurpExtenderUtilities.Alignment;
 import com.coreyd97.BurpExtenderUtilities.ComponentGroup;
 import com.coreyd97.BurpExtenderUtilities.PanelBuilder;
 import com.coreyd97.BurpExtenderUtilities.Preferences;
-import com.nccgroup.loggerplusplus.LoggerPlusPlus;
-import com.nccgroup.loggerplusplus.filter.logfilter.LogFilter;
-import com.nccgroup.loggerplusplus.filter.parser.ParseException;
-import com.nccgroup.loggerplusplus.filterlibrary.FilterLibraryController;
-import com.nccgroup.loggerplusplus.logentry.LogEntryField;
-import com.nccgroup.loggerplusplus.util.Globals;
-import com.nccgroup.loggerplusplus.util.MoreHelp;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.List;
-import java.util.Objects;
 
 import static com.nccgroup.loggerplusplus.util.Globals.*;
 
@@ -31,9 +20,7 @@ public class ShadelessExporterConfigDialog extends JDialog {
         this.setLayout(new BorderLayout());
         Preferences preferences = elasticExporter.getPreferences();
 
-        JTextField packetUrlField = PanelBuilder.createPreferenceTextField(preferences, PREF_SHADELESS_PACKETS_URL);
-        JTextField fileUrlField = PanelBuilder.createPreferenceTextField(preferences, PREF_SHADELESS_FILES_URL);
-        JTextField fileCheckUrlField = PanelBuilder.createPreferenceTextField(preferences, PREF_SHADELESS_FILES_CHECK_URL);
+        JTextField packetUrlField = PanelBuilder.createPreferenceTextField(preferences, PREF_SHADELESS_URL);
         JTextField projectField = PanelBuilder.createPreferenceTextField(preferences, PREF_SHADELESS_PROJECT);
         JTextField codeName = PanelBuilder.createPreferenceTextField(preferences, PREF_CODE_NAME);
 
@@ -43,9 +30,7 @@ public class ShadelessExporterConfigDialog extends JDialog {
         ((SpinnerNumberModel) delaySpinner.getModel()).setStepSize(10);
 
         ComponentGroup connectionGroup = new ComponentGroup(ComponentGroup.Orientation.VERTICAL, "Connection");
-        connectionGroup.addComponentWithLabel("Packet url: ", packetUrlField);
-        connectionGroup.addComponentWithLabel("File url: ", fileUrlField);
-        connectionGroup.addComponentWithLabel("File check url: ", fileCheckUrlField);
+        connectionGroup.addComponentWithLabel("Shadeless url: ", packetUrlField);
         connectionGroup.addComponentWithLabel("Project: ", projectField);
         connectionGroup.addComponentWithLabel("Codename: ", codeName);
         connectionGroup.addComponentWithLabel("Upload frequency (in seconds): ", delaySpinner);
